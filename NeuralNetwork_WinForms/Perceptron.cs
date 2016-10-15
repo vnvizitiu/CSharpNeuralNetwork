@@ -18,7 +18,7 @@ namespace NeuralNetwork_WinForms
         {
             weight = new double[_inputsCount];
             for (int i = 0; i < weight.Length; i++)
-                weight[i] = _rnd.NextDouble()-0.5 ;
+                weight[i] = _rnd.NextDouble()-0.5;
 
             BiasWeight =2;
         }

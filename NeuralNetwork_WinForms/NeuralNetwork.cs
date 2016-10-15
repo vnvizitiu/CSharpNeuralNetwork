@@ -30,10 +30,10 @@ namespace NeuralNetwork_WinForms
             Points = new List<double[]>();
             rnd = new Random();
 
-            inputsCount = 8;
+            inputsCount = 12;
             outputsCount = 1;
-            totalLayersCount = 3;
-            perceptronsInHiddenLayer =4;
+            totalLayersCount = 4;
+            perceptronsInHiddenLayer =5;
 
             InitTopology(inputsCount, outputsCount, totalLayersCount, perceptronsInHiddenLayer, rnd);
 
@@ -88,7 +88,7 @@ namespace NeuralNetwork_WinForms
                         if (point[2] == 1)
                             pen = new Pen(Color.Red, 1);
                         else
-                            pen = new Pen(Color.Yellow, 1);
+                            pen = new Pen(Color.LightSkyBlue, 1);
                         e.Graphics.DrawEllipse(pen, ((float)point[0] +1)*125, ((float)point[1] + 1) * 125, 3, 3);
                     }
             }
@@ -135,7 +135,7 @@ namespace NeuralNetwork_WinForms
         private void buttonLearn_Click(object sender, EventArgs e)
         {
             //iterate all
-            for (int i = 0; i < 20000; i++)
+            for (int i = 0; i < 2000; i++)
                 foreach (double[] point in Points)
                 {
                     CalculateOutputs(new double[] { point[0], point[1] });
@@ -160,11 +160,11 @@ namespace NeuralNetwork_WinForms
                         else
                             input = p[layer - 1][j].Output;
                         
-                        p[layer][i].weight[j] += 0.008 * p[layer][i].Sigma * (1- (p[layer][i].Output * p[layer][i].Output)) * input;
+                        p[layer][i].weight[j] += 0.002 * p[layer][i].Sigma * (1- (p[layer][i].Output * p[layer][i].Output)) * input;
                       
                     }
 
-                     p[layer][i].BiasWeight += 0.008 * p[layer][i].Sigma * (1 - (p[layer][i].Output * p[layer][i].Output));
+                     p[layer][i].BiasWeight += 0.002 * p[layer][i].Sigma * (1 - (p[layer][i].Output * p[layer][i].Output));
 
                 }
         }

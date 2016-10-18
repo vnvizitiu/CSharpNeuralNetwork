@@ -87,8 +87,10 @@ namespace NeuralNetwork_WinForms
                     {
                         if (point[2] == 1)
                             pen = new Pen(Color.Red, 1);
-                        else
+                        else if(point[2] == -1)
                             pen = new Pen(Color.LightSkyBlue, 1);
+                        else
+                            pen = new Pen(Color.GreenYellow, 1);
                         e.Graphics.DrawEllipse(pen, ((float)point[0] +1)*125, ((float)point[1] + 1) * 125, 3, 3);
                     }
             }
@@ -106,10 +108,14 @@ namespace NeuralNetwork_WinForms
             double[] matrix = new double[3];
             matrix[0] = ((((double)e.X) / 250)*2)-1;
             matrix[1] = ((((double)e.Y) / 250) * 2) - 1;
+
             if (e.Button == MouseButtons.Left)
                 matrix[2] = 1;
+            else if(e.Button == MouseButtons.Middle)
+                matrix[2] = 0;
             else
                 matrix[2] = -1;
+
 
             Points.Add(matrix);
             pictureBoxResult.Refresh();
@@ -159,7 +165,7 @@ namespace NeuralNetwork_WinForms
                             input = _point[j];///pomylonailosc wejsc ziloscia neuronow wejsciowych
                         else
                             input = p[layer - 1][j].Output;
-                        
+                        double result = 
                         p[layer][i].weight[j] += 0.002 * p[layer][i].Sigma * (1- (p[layer][i].Output * p[layer][i].Output)) * input;
                       
                     }

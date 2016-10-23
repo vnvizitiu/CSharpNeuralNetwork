@@ -50,7 +50,7 @@ namespace NeuralNetwork_WinForms
         Perceptron[][] p;
 
 
-        public NeuralNetwork(int _inputs, int _outputs, int _totalLayersCount, int _perceptronsInHiddenLayer)
+        public NeuralNetwork(int _inputs, int _perceptronsInHiddenLayer, int _outputs, int _totalLayersCount)
         {
             inputsCount = _inputs;
             outputsCount = _outputs;

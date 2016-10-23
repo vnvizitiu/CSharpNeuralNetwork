@@ -22,7 +22,7 @@ namespace NeuralNetwork_WinForms
         {
             InitializeComponent();
 
-            nn= new NeuralNetwork(9, 1, 3, 5);
+            nn = new NeuralNetwork(9, 5, 1, 4);
 
             pictureBoxResult.Refresh();
         }
@@ -31,43 +31,39 @@ namespace NeuralNetwork_WinForms
 
         private void pictureBoxResult_Paint(object sender, PaintEventArgs e)
         {
-            try
+            float[] matrix = new float[2];
+            Bitmap bmp = new Bitmap(250, 250);
+            var pen = new Pen(Color.Black, 2);
+
+            for (int x = 0; x < 250; x++)
             {
+                matrix[0] = ((((float)x) / 250) * 2) - 1;
 
-                var pen = new Pen(Color.Black, 2);
-                for (int x = 0; x < 250; x++)
-                    for (int y = 0; y < 250; y++)
-                    {
-                        float[] matrix = new float[2];
-                        matrix[0] = ((((float)x) / 250) * 2) - 1;
-                        matrix[1] = ((((float)y) / 250) * 2) - 1;
+                for (int y = 0; y < 250; y++)
+                {
+                    matrix[1] = ((((float)y) / 250) * 2) - 1;
+                    int color = (int)((nn.CalculateOutputs(matrix) + 1) * 127);
 
-                       
-
-                        int color = (int)((nn.CalculateOutputs(matrix)+1) * 127);
-
-                        pen = new Pen(Color.FromArgb(255, color, color, color), 1);
-                        e.Graphics.DrawLine(pen, (float)x, (float)y, (float)x + 1, (float)y + 1);
-                    }
-
-                if (nn.InputWithOneOutputMatrix != null && nn.InputWithOneOutputMatrix.Count > 0)
-                    foreach (float[] point in nn.InputWithOneOutputMatrix)
-                    {
-                        if (point[2] == 1)
-                            pen = new Pen(Color.Red, 1);
-                        else if(point[2] == -1)
-                            pen = new Pen(Color.LightSkyBlue, 1);
-                        else
-                            pen = new Pen(Color.GreenYellow, 1);
-                        e.Graphics.DrawEllipse(pen, ((float)point[0] +1)*125, ((float)point[1] + 1) * 125, 3, 3);
-                    }
-            }
-            catch(Exception ex)
-            {
-                Trace.WriteLine(ex.ToString());
+                    bmp.SetPixel(x, y, Color.FromArgb(255, color, color, color));
+                }
             }
 
+
+
+            if (nn.InputWithOneOutputMatrix != null && nn.InputWithOneOutputMatrix.Count > 0)
+                foreach (float[] point in nn.InputWithOneOutputMatrix)
+                {
+                    if (point[2] == 1)
+                        bmp.SetPixel((int)((float)point[0] + 1) * 125, (int)((float)point[1] + 1) * 125, Color.Red);
+                    else if (point[2] == -1)
+                        bmp.SetPixel((int)((float)point[0] + 1) * 125, (int)((float)point[1] + 1) * 125, Color.Green);
+                    else
+                        bmp.SetPixel((int)((float)point[0] + 1) * 125, (int)((float)point[1] + 1) * 125, Color.Blue);
+                }
+
+            e.Graphics.DrawImage((Image)bmp, new Point(0, 0));
         }
+    
 
 
         private void pictureBoxResult_MouseClick(object sender, MouseEventArgs e)
@@ -103,7 +99,7 @@ namespace NeuralNetwork_WinForms
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            nn = new NeuralNetwork(9, 1, 3, 5);
+            nn = new NeuralNetwork(9, 5, 1, 4);
             pictureBoxResult.Refresh();
         }
     }

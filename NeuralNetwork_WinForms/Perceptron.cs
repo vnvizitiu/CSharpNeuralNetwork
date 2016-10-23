@@ -100,28 +100,22 @@ namespace NeuralNetwork_WinForms
             return p[totalLayersCount - 1][0].Output;
         }
 
-        public  void UpgradeWeight(float[] _point)
+        public void UpgradeWeight(float[] _point)
         {
             for (int layer = 0; layer < totalLayersCount; layer++)
                 for (int i = 0; i < p[layer].Length; i++)
                 {
-                    float input = 0;
                     float func = learningRate * p[layer][i].Sigma * (1 - (p[layer][i].Output * p[layer][i].Output));
-
+                    p[layer][i].BiasWeight += func;
 
                     for (int j = 0; j < p[layer][i].weight.Length; j++)
                     {
 
                         if (layer == 0)
-                            input = _point[j];///pomylonailosc wejsc ziloscia neuronow wejsciowych
+                            p[layer][i].weight[j] += func * _point[j];
                         else
-                            input = p[layer - 1][j].Output;
-
-                        p[layer][i].weight[j] += func * input;
-
+                            p[layer][i].weight[j] += func * p[layer - 1][j].Output;
                     }
-
-                    p[layer][i].BiasWeight += func;
 
                 }
         }

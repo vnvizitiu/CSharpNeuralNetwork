@@ -39,7 +39,12 @@ namespace NeuralNetwork_WinForms
     }
     class NeuralNetwork
     {
-        public List<float[]> InputWithOneOutputMatrix;
+     //   public List<float[]> InputWithOneOutputMatrix;
+
+        public List<float[]> InputMatrix;
+        public List<float[]> OutputMatrix;
+
+
         int inputsCount;
         int outputsCount;
         int totalLayersCount;
@@ -57,7 +62,10 @@ namespace NeuralNetwork_WinForms
             totalLayersCount = _totalLayersCount;
             perceptronsInHiddenLayer = _perceptronsInHiddenLayer;
             rnd = new Random();
-            InputWithOneOutputMatrix = new List<float[]>();
+          //  InputWithOneOutputMatrix = new List<float[]>();
+            InputMatrix = new List<float[]>();
+            OutputMatrix = new List<float[]>();
+
 
             InitTopology();          
         }
@@ -76,13 +84,13 @@ namespace NeuralNetwork_WinForms
             //initialize weight and other stuff
             for (int layer = 0; layer < p.Length; layer++)
                 for (int perceptron = 0; perceptron < p[layer].Length; perceptron++)
-                    if (layer - 1 < 0)
-                        p[layer][perceptron] = new Perceptron(2, rnd);
+                    if (layer == 0)
+                        p[layer][perceptron] = new Perceptron(inputsCount, rnd);////sprawdzic jeszcze
                     else
                         p[layer][perceptron] = new Perceptron(p[layer - 1].Length, rnd);
         }
 
-        public float CalculateOutputs(float[] _point)
+        public float[] CalculateOutputs(float[] _point)
         {
             for (int i = 0; i < p[0].Length; i++)
                 p[0][i].ShowMatrix(_point);//show data input layers
@@ -96,8 +104,11 @@ namespace NeuralNetwork_WinForms
 
                     p[layers][i].ShowMatrix(matrix);
                 }
+            float[] outputs = new float[outputsCount];
+            for (int i = 0; i < outputsCount; i++)
+                outputs[i] = p[totalLayersCount - 1][i].Output;
 
-            return p[totalLayersCount - 1][0].Output;
+            return outputs;//p[totalLayersCount - 1][0].Output;
         }
 
         public void UpgradeWeight(float[] _point)
@@ -120,10 +131,10 @@ namespace NeuralNetwork_WinForms
                 }
         }
 
-        public void CalculateSigma(float _expectation)
+        public void CalculateSigma(float[] _expectation)
         {
             for (int i = 0; i < p[totalLayersCount - 1].Length; i++)
-                p[totalLayersCount - 1][i].Sigma = _expectation - p[totalLayersCount - 1][i].Output;
+                p[totalLayersCount - 1][i].Sigma = _expectation[i] - p[totalLayersCount - 1][i].Output;
 
 
             for (int layer = totalLayersCount - 2; layer >= 0; layer--)
@@ -141,11 +152,13 @@ namespace NeuralNetwork_WinForms
         {
             learningRate = (float)_learningRate;
             for (int i = 0; i < epoch; i++)
-                foreach (float[] point in InputWithOneOutputMatrix)
+                for(int j=0; j<InputMatrix.Count; j++)
+             //   foreach (float[] point in InputMatrix)//InputWithOneOutputMatrix)
                 {
-                    CalculateOutputs(new float[] { point[0], point[1] });
-                    CalculateSigma(point[2]);
-                    UpgradeWeight(point);
+                    CalculateOutputs(InputMatrix[j]);
+                    for(int k = 0;k<outputsCount;k++)
+                        CalculateSigma(OutputMatrix[j]);
+                    UpgradeWeight(InputMatrix[j]);
                 }
         }
 

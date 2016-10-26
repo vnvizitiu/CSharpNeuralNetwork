@@ -15,14 +15,20 @@ namespace NeuralNetwork_WinForms
     {
 
         NeuralNetwork nn;
+        Bitmap bmp;
 
-
+        int inputsCount=6;
+        int outputsCount=1;
+        int totalLayersCount=3;
+        int perceptronsInHiddenLayer=3;
+        float learningRate=0.01f;
 
         public Form1()
         {
             InitializeComponent();
 
-            nn = new NeuralNetwork(9, 5, 1, 4);
+            nn = new NeuralNetwork(inputsCount, perceptronsInHiddenLayer, outputsCount, totalLayersCount);
+             bmp = new Bitmap(250, 250);
 
             pictureBoxResult.Refresh();
         }
@@ -31,56 +37,41 @@ namespace NeuralNetwork_WinForms
 
         private void pictureBoxResult_Paint(object sender, PaintEventArgs e)
         {
-            float[] matrix = new float[2];
-            Bitmap bmp = new Bitmap(250, 250);
-            var pen = new Pen(Color.Black, 2);
 
-            for (int x = 0; x < 250; x++)
-            {
-                matrix[0] = ((((float)x) / 250) * 2) - 1;
-
-                for (int y = 0; y < 250; y++)
+            if (nn.InputMatrix != null && nn.InputMatrix.Count > 0)
+                for(int i=0; i < nn.InputMatrix.Count;i++)
+               // foreach (float[] point in nn.InputMatrix)
                 {
-                    matrix[1] = ((((float)y) / 250) * 2) - 1;
-                    int color = (int)((nn.CalculateOutputs(matrix) + 1) * 127);
-
-                    bmp.SetPixel(x, y, Color.FromArgb(255, color, color, color));
-                }
-            }
-
-
-
-            if (nn.InputWithOneOutputMatrix != null && nn.InputWithOneOutputMatrix.Count > 0)
-                foreach (float[] point in nn.InputWithOneOutputMatrix)
-                {
-                    if (point[2] == 1)
-                        bmp.SetPixel((int)((float)point[0] + 1) * 125, (int)((float)point[1] + 1) * 125, Color.Red);
-                    else if (point[2] == -1)
-                        bmp.SetPixel((int)((float)point[0] + 1) * 125, (int)((float)point[1] + 1) * 125, Color.Green);
+                    if (nn.OutputMatrix[i][0] == 1)
+                        bmp.SetPixel((int)((nn.InputMatrix[i][0] + 1) * 125), (int)((nn.InputMatrix[i][1] + 1) * 125), Color.Red);
+                    else if (nn.OutputMatrix[i][0] == -1)
+                        bmp.SetPixel((int)((nn.InputMatrix[i][0] + 1) * 125), (int)((nn.InputMatrix[i][1] + 1) * 125), Color.Green);
                     else
-                        bmp.SetPixel((int)((float)point[0] + 1) * 125, (int)((float)point[1] + 1) * 125, Color.Blue);
+                        bmp.SetPixel((int)((nn.InputMatrix[i][0] + 1) * 125), (int)((nn.InputMatrix[i][1] + 1) * 125), Color.Blue);
                 }
 
             e.Graphics.DrawImage((Image)bmp, new Point(0, 0));
         }
     
-
-
         private void pictureBoxResult_MouseClick(object sender, MouseEventArgs e)
         {
 
-            float[] matrix = new float[3];
-            matrix[0] = ((((float)e.X) / 250)*2)-1;
-            matrix[1] = ((((float)e.Y) / 250) * 2) - 1;
+            float[] InputMatrix = new float[inputsCount];
+            float[] OutputMatrix = new float[outputsCount];
+
+            InputMatrix[0] = ((((float)e.X) / 250)*2)-1;
+            InputMatrix[1] = ((((float)e.Y) / 250) * 2) - 1;
 
             if (e.Button == MouseButtons.Left)
-                matrix[2] = 1;
+                OutputMatrix[0] = 1;
             else if(e.Button == MouseButtons.Middle)
-                matrix[2] = 0;
+                OutputMatrix[0] = 0;
             else
-                matrix[2] = -1;
+                OutputMatrix[0] = -1;
 
-            nn.InputWithOneOutputMatrix.Add(matrix);
+            nn.InputMatrix.Add(InputMatrix);
+            nn.OutputMatrix.Add(OutputMatrix);
+          //  nn.InputWithOneOutputMatrix.Add(matrix);
             pictureBoxResult.Refresh();
         }
 
@@ -89,7 +80,22 @@ namespace NeuralNetwork_WinForms
 
         private void buttonLearn_Click(object sender, EventArgs e)
         {
-            nn.Learn();
+            nn.Learn(2000,learningRate);
+
+            float[] matrix = new float[inputsCount];
+
+            for (int x = 0; x < 250; x++)
+            {
+                matrix[0] = ((((float)x) / 250) * 2) - 1;
+
+                for (int y = 0; y < 250; y++)
+                {
+                    matrix[1] = ((((float)y) / 250) * 2) - 1;
+                    int color = (int)((nn.CalculateOutputs(matrix)[0] + 1) * 127);
+                    bmp.SetPixel(x, y, Color.FromArgb(255, color, color, color));
+                }
+            }
+
             pictureBoxResult.Refresh();
         }
 
@@ -99,7 +105,8 @@ namespace NeuralNetwork_WinForms
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            nn = new NeuralNetwork(9, 5, 1, 4);
+            nn = new NeuralNetwork(inputsCount, perceptronsInHiddenLayer, outputsCount, totalLayersCount);
+            bmp = new Bitmap(250, 250);
             pictureBoxResult.Refresh();
         }
     }
